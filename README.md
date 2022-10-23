@@ -2,7 +2,7 @@
 
 A puppet-control-type repository for managing a software infrastructure using the "setups" paradigm.
 
-The main repository is at: https://github.com/httk-system/puppet-setups
+The main repository is at: https://github.com/httk-system/puppet-setups-control
 
 ## Preface
 
