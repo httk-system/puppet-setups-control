@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# This file is part of puppet-setups:
+#   https://github.com/httk-system/puppet-setups
+#
+# (c) Rickard Armiento (2022)
+#
+# Use of this source code is governed by an MIT-style
+# license that can be found in the LICENSE file or at
+# https://opensource.org/licenses/MIT.
+#
+# This script reaches out to a system via ssh to invoke, via
+# public key identification, the command to run the system updater.
+# The syntax is the same as for ssh.
+
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <hostname>"
+    exit 1
+fi
+
+gpgconf --kill gpg-agent
+DISPLAY="" ssh-agent bash -c "ssh-add -q -s /usr/lib/x86_64-linux-gnu/libykcs11.so;
+ssh-add -L | grep -v 'Retired Key 19' | ssh-add -q -d -;
+ssh \"\$@\"" "$0" "$@"

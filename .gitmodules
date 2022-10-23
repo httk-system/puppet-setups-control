@@ -1,0 +1,24 @@
+[submodule "modules/upstream-modules"]
+	path = modules/upstream-modules
+	url = https://github.com/httk-system/puppet-modules.git
+[submodule "modules/upstream-setups"]
+	path = modules/upstream-setups
+	url = https://github.com/httk-system/puppet-setups.git
+[submodule "modules/external/firewall"]
+	path = modules/external/firewall
+	url = https://github.com/puppetlabs/puppetlabs-firewall.git
+[submodule "modules/external/ntp"]
+	path = modules/external/ntp
+	url = https://github.com/puppetlabs/puppetlabs-ntp.git
+[submodule "modules/external/fail2ban"]
+	path = modules/external/fail2ban
+	url = https://github.com/voxpupuli/puppet-fail2ban
+[submodule "modules/external/stdlib"]
+	path = modules/external/stdlib
+	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
+[submodule "modules/external/concat"]
+	path = modules/external/concat
+	url = https://github.com/puppetlabs/puppetlabs-concat.git
+[submodule "modules/external/apache"]
+	path = modules/external/apache
+	url = https://github.com/puppetlabs/puppetlabs-apache.git
