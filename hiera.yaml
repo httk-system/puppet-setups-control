@@ -6,3 +6,5 @@ defaults:
 hierarchy:
   - name: "Common Data"
     path: "common.yaml"
+  - name: "Setup"
+    path: "setup.yaml"

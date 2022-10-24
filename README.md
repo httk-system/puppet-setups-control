@@ -1,47 +1,84 @@
-# puppet-setups
+# puppet-setups-control
 
-A puppet-control-type repository for managing a software infrastructure using the "setups" paradigm.
+Instructions and a template repository for efficient and secure configuration management of a computing infrastructure using *puppet* with the *puppet-setups* model.
 
-The main repository is at: https://github.com/httk-system/puppet-setups-control
+    These instructions and source code is governed by an MIT-style license that can be found in the LICENSE file or at https://opensource.org/licenses/MIT.
+
+    (c) Rickard Armiento, 2022
+
+The main repository is located at: https://github.com/httk-system/puppet-setups-control
+
+## At a glance
+
+The instructions in this README explains how to set up of a configuration management system with the following highlights:
+
+* Puppet-based git-repo-centric configuration management for your computing infrastructure, using GitHub or equivalent.
+* Consistent security model based on public key ssh authentication and signatures with yubikeys hardware keys (recommended) or regular gpg keys (not recommended)
+* Git submodules are used to track puppet module dependencies, giving a structure that is, arguably, easier to understand and review from security perspective than puppet-librarian, r10k, etc.
+* Organization and abstraction of puppet manifests in a *puppet-setups* model that uses a Hiera *setup hierarchy* and puppet *setup modules* which, arguably, has some benefit over a more standard *roles and profiles* model.
+* Enables configuration work to be carried out on the managed systems themselves without the management system getting too much in the way.
 
 ## Preface
 
+### Puppet
+
 Puppet is a software configuration management tool maintained by the company [Puppet, Inc.](https://puppet.com).
-The tool uses a declarative language to specify the configuration of installed software accross a computer infrastructure comprised by *nodes* (which essentially is a more general term for "computer" which also covers, e.g., containers and virtualized systems).
-The Puppet language allow many different ways of organizing the declarative configuration manifests.
-One should seek a design that allows for a good overview of the nodes being managed, as well as allows for meaningful abstraction and reuse of configuration manifests.
+The tool uses a declarative language in *puppet manifests* expressed in *puppet modules* to specify the configuration of software accross a computing infrastructure comprised by *nodes* (essentially a more general term for "computer" that covers, e.g., containers and virtualized systems).
 
-A defacto standard, the *roles and profiles* method, has emerged for organizing puppet manufests to describe the configuration of more complex computer infrastructures.
-This method is well documented both in the docs by [Puppet, inc.](https://puppet.com/docs/puppet/6/the_roles_and_profiles_method.html) and widely in various third-party tutorials and guides, e.g., [the Puppet enterprise guide](https://puppet-enterprise-guide.com/theory/roles-and-profiles-overview.html).
-In the typical application of *roles and profiles*, an organization of three levels is prescribed.
-A *node* is assigned one (and only one) role, which then specifies a set of *profiles* (which can be shared between multiple roles).
-The profiles are built up by a set of modules that typically handles the configuration of a specific software.
-For example, one may have *main webserver* and *backup webserver* roles, which both invoke the same *webserver* profile, which defers the details of the Apache web server configuration to an *apache* module.
+### The *roles and profiles* method
 
-Hence, in the *roles and profiles* scheme, the infrastructure configuration is planned with a "per-node" perspective.
-This is analogous with how we often think of individual computers as file servers, web servers, etc.
-Nevertheless, for software where the configuration spans multiple nodes, the "per-node" organization sometime appear less natural.
+Puppet modules can be organized and abstracted in many different ways.
+The current standard way is known as the *roles and profiles* method.
+It is well documented both in the [puppet documentation](https://puppet.com/docs/puppet/6/the_roles_and_profiles_method.html) and broadly in various third-party tutorials and guides, e.g., [the Puppet enterprise guide](https://puppet-enterprise-guide.com/theory/roles-and-profiles-overview.html).
 
-The present repository represents an opininated alternative method, *setups*.
-The main idea is to use software technologies (possibly spanning many nodes) as the outermost level when planning an infrastructure configuration, e.g., "big data analytics cluster", "load balancing web server farm", and "fileserver farm".
-The configuration of these technologies include various parameters to control their behavior and the assigment of "roles" to specific nodes.
-For example, the configuration of an hadoop big data anlytics cluster would specify that the *hadoop name server* role is assigned to node "n4711", the *hadoop backup name server* role is assinged to node "n42" and the spark history server role is also assigned to node "n4711".
+The typical application of *roles and profiles* prescribes an organization of three levels.
+A node managed by puppet is assigned one (and only one) *role*, which is comprised by a set of *profiles*.
+The profiles are in turn built up by puppet modules that are typically very oriented towards a specific software.
+For example, one may have *main webserver* and *backup webserver* roles which invoke the same *webserver* profile; which then uses the *apache* puppet module for the specific management the configuration of the Apache web server software.
+Hence, the *roles and profiles* model specify configuration in a "per-node" perspective, in analog to how we tend to think of computers in a computing infrastructure as file servers, web servers, etc.
 
-In practice, in the *setup* configuration method we declare Puppet functions called `setup_<technology>` that takes a single hash argument `config`.
-Using Heira we declare separately global configuation parameters, a list of *systems* (here used with the same meaning as nodes), and a *setup* hierarchy that describe the infrastructure setup.
+### The *puppet-setups* method
 
-The present repository provides a practical implementation for recent Ubuntu systems. It is organized as follows:
-- `bin` - some useful tools
-- `hiera` - the hiera configuration
-- `manifests` - the primary puppet manifests
-- `modules` - modules that the repository depends on
-- `securiry` - security-related data files
+In contrast to the *roles and profiles* method, the *puppet-setups* model uses as its highest level concept a *setup*, representing a complete software technology (that can possibly span many nodes).
+A list of the *setups* invoked in a computing infrastructure is declared in a Hiera *setup hierarchy*.
+The *setup hierarchy* specifies (i) the general parameters for the specific instance of the technology being configured; (ii) each node that participate in this *setup* with its respective *setup role* and role-specific parameters.
 
-## Before you start
+When puppet applies the configuration, the *setup hierarchy* is traversed and for each *setup* for each participating node, a puppet function on the format `setup_<setup name>::<role name>($config)` is called.
+Hence, a *setup module* is a puppet module that provide a namespaced puppet function for each *setup role*.
+The *setup role* function invokes regular *puppet modules* to manage specific software.
+For example, one may have *setups* for, e.g., *big data analytics cluster*, *load balancing web server farm*, and *fileserver*.
+In this example, the *big data analytics cluster* part of the Hiera *setup hierarchy* may specify that the *hadoop name server* role is assigned to node "n4711", the *hadoop backup name server* role is assinged to node "n4712" and the spark history server role is also assigned to node "n4711".
 
-The infrastructure consists of managed machines and one or more *control centers*.
-A control center should be a machine where you (or other system administratos) are physically present at to perform system administration tasks.
-(A machine can be both managed and a control center.)
+### Repository organization
+
+It is advisible to divide into separate git repositories (i) *puppet-control* for the configuration data pertaining to a specific computing infrastructure; (ii) one or more *puppet-setup* repositories, each with a set of *setup modules*; (iii) one or more *puppet-modules* repositories, each with a set of puppet modules managing specific softwares.
+We handle the relationship between the *puppet-control* repository and its dependencies via [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
+
+The *puppet-control* repository is mostly organized as usual for puppet control repositories:
+
+* `bin/` contains some useful scripts / tools.
+
+* `security/` contains some security-related data files.
+
+* `manifests/` contains the primary puppet manifests that are run on puppet apply, etc..
+
+* `hiera/setups.yaml` contains the *setup hierarchy* with, more or less, the whole computing infrastructure configuration.
+  (You can of course divide it up into more files if you prefer.)
+
+* `modules/` uses Git submodules to include dependencies in subdirectories as follows:
+
+  * `upstream-setups`: puppet *setup modules* provided by "upstream", i.e., the `httk-system` GitHub organization.
+  * `upstream-modules`: puppet modules provided by upstream.
+  * `local-setups`: *setup modules* tailored for your own computing infrastructure.
+  * `local-modules`: puppet modules tailored for your own computing infrastructure.
+  * `external`: every subdirectory is an external module provided elsewhere, e.g., the standard `apache` and `firewall` modules provided by puppetlabs.
+
+## Prerequisites
+
+### Control center machine
+
+The infrastructure consists of *managed nodes* and one or more *control centers* (one machine can be both.)
+A *control center* should be a machine where you (or other system administratos) are physically present at to perform system administration tasks, meaning that it is a physically secure place for encryption keys, etc.
 
 Furthermore, for management on remote systems all system administrators need a *control user*.
 It is a good idea to keep these separate from your regular login names, e.g., by adding a "sys" prefix or suffix to the regular usernames.
@@ -56,122 +93,20 @@ sudo apt install yubico-piv-tool ykcs11
 
 NOTE: the yubico-piv-tool 2.2.0 on Ubuntu 22.04 is not working properly due to a mismatch with the openssl version. On this platform you have to download and build version yubico-piv-tool 2.3.0 manually.
 
-## Security infrastructure with gpg keys or yubikeys
+### Security setup
 
-Before we start, we need to prepare the security infrastructure.
-It is completely centered on cryptograhic signatures handled by gpg.
+The security infrastructure is completely centered on cryptograhic signatures handled by gpg, either (preferably) stored on hardware tokens (yubikeys) or (not recommended) as password protected files stored locally on your *control center* machines.
 
-Obviously, this makes the security of your cryptograhic keys extremely important.
-Hence, it is highly recommended to invest in at least three [yubikeys](https://www.yubico.com/se/store/).
-These devices are hardware tokens that, when correctly setup and used, makes sure no one will be able to obtain a copy of your secret keys without you knowing. 
-I am not affiliated with Yubico, but the cost of these devices is highly motivated for the extra security it brings to managing your infrastructure.
+It is thus highly recommended to invest in at least three [yubikeys](https://www.yubico.com/se/store/).
+These devices are hardware tokens that, when correctly setup and used, makes sure no one will be able to obtain a copy of your secret keys without you knowing.
+I am not affiliated with Yubico, but the cost of these devices is highly motivated for the extra security it brings to managing your infrastructure
 
 The motivation for getting three keys is a golden rule in software and hardware management: never plan to place yourself in a position where there is a single hardware failure between you and a disasterous conseuqence.
 In our case, one day one of our keys will have to be replaced (e.g., due to breaking or missing).
-If we only have two keys and one is gone, we are in a situation where, if the remaining key also fails, we are loced out of our infrastructure. 
+If we only have two keys and one is gone, we are in a situation where, if the remaining key also fails, we are loced out of our infrastructure.
 (If there is more than one system administrator, the requirement translates to a minimum of three keys in *total*, not per person. However, it is probably a good idea to provide two keys per administrator, since otherwise each key failure means a person is blocked from work until the replacement key is in place.)
 
-## Setting up your yubikeys (if you do not have yubikeys, skip to next section)
-
-For each yubikey you have, do steps 1-7:
-
-1. Insert the yubikey and make sure gpg has access to it
-   ```
-   gpg --card-status
-   ```
-   You should see a dump of info about your yubikey here.
-   If you do not, a few things you can try are:
-   (i) re-insert the yubikey;
-   (ii) kill the gpg-agent process;
-   (iii) `systemctl restart pcscd`.
-
-2. Secure the PINs and settings for the apps we will use.
-
-   Note: *the default pin is 123456* and *the default puk is 123456768*.
-   ```
-   gpg --change-admin-pin
-   gpg --change-pin
-   yubico-piv-tool -a change-puk
-   yubico-piv-tool -a change-pin
-   ykman openpgp keys set-touch aut on
-   ykman openpgp keys set-touch sig on
-   ykman openpgp keys set-touch enc on
-   ```
-
-3. Create gpg keys on the device itself.
-   (Note: I highly recommend *against* advice in other tutorials to generate the keys outside of the yubikey and then store them on the device.
-   In my opinion, this leads to a significantly reduced overall security in your setup to allow the crytographic keys to exist outside of the hardware protection provided by the yubikey).
-   ```
-   gpg --edit-card
-   ```
-   In the promt that appear, write `admin`, `key-attr` and select "ECC" and "Curve 25519" for all three types of keys. Then generate keys with `generate`.
-   Set expiry to 1 year.
-
-4. Get the key id for the key you just generated:
-   ```
-   KEYID=$(gpg --card-status --with-colons | grep "^fpr:" | awk -F: '{print $2}')
-   ```
-
-5. Somewhere reasonably safe (and backed up),
-   create a subdirectory for this specific yubikey and store
-   a revokation certificate and the gpg and ssh-formatted
-   versions of the public key:
-   ```
-   mkdir <yubikey id>
-   cd <yubikey id>
-
-   gpg --output yubikey-revoke.asc --gen-revoke "$KEYID"
-
-   gpg --armor --export "$KEYID" > yubikey-public-gpg.asc
-   gpg --export-ssh-key "$KEYID" > yubikey-public-ssh.pub
-   ```
-
-6. We also want to create two special ssh authentication piv keys.
-   These keys will be setup to only require pin once per session and
-   no touch, which makes them less secure, since a rogue process
-   running on your machine could invoke their use unlimited.
-   However, we will use these keys to identify us over ssh to
-   be able to run commands on all managed systems and having to
-   touch the yubikey for each such connection would be cumbersome.
-   Hence, we will set things up so that the actions these key
-   can peform are very limited.
-
-   We will use slot 94 and 95 for this, which are the last of the
-   "retired key management" slots.
-   ```
-   yubico-piv-tool -s 95 -A ECCP256 -a generate -o piv95-public.pem --pin-policy=once --touch-policy=never
-   yubico-piv-tool -a verify-pin -a selfsign-certificate -s 95 -S "/CN=SSH key slot 95/" -i piv95-public.pem -o piv95-cert.pem
-   yubico-piv-tool -a import-certificate -s 95 -i piv95-cert.pem
-
-   yubico-piv-tool -s 94 -A ECCP256 -a generate -o piv94-public.pem --pin-policy=once --touch-policy=never
-   yubico-piv-tool -a verify-pin -a selfsign-certificate -s 94 -S "/CN=SSH key slot 94/" -i piv94-public.pem -o piv94-cert.pem
-   yubico-piv-tool -a import-certificate -s 94 -i piv94-cert.pem
-   ```
-
-7. Export the piv keys in ssh format
-   ```
-   ssh-keygen -D libykcs11.so -e | grep "Public key for Retired Key 20" > yubikey-public-ssh-piv95.pub
-   ssh-keygen -D libykcs11.so -e | grep "Public key for Retired Key 19" > yubikey-public-ssh-piv94.pub
-   ```
-   
-8. Repeat steps 1-7 for all yubikeys you have to set up.
-   When finished, make sure your current working directory have all key directories as subdirectories.
-
-9. Create files that collect all these public ssh keys, per user:
-   ```
-   cat */yubikey-public-ssh.pub > authorized_keys.<control username>
-   cat */yubikey-public-ssh-piv95.pub | awk '{print "command=\"/usr/control/puppet-apply\"",$0}' > authorized_keys_apply.<control username>
-   cat */yubikey-public-ssh-piv94.pub | awk '{print "command=\"/usr/control/system-update"}' > authorized_keys_update.<control username>
-   ```
-
-10. Create a file that collect all the gpg signature keys:
-    ```
-    cat */yubikey-public-gpg.asc > trusted_keys.asc
-    ```
-
-## Setting up gnupg keys (skip if using yubikeys)
-
-(To be added)
+For information on how to configure the yubikeys, see: [YUBIKEYS.md](YUBIKEYS.md).
 
 ## Bootstrap setup
 

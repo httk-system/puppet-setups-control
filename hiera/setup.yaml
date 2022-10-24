@@ -1,0 +1,107 @@
+---
+systems:
+
+  node_gw:
+    ip: 10.255.0.1
+    ssh_port: 3322
+    rate_limit_ssh_forward: true
+    rate_limit_ssh: true
+    ssh_forward_ports: [22, 3422]
+
+  node_srv:
+    ip: 10.255.0.2
+    ssh_port: 3422
+
+  node_login:
+    ip: 10.255.0.4
+    ssh_port: 22
+    fail2ban_exclude: [10.255.0.1]
+    motd: |
+      **************************************************************************************
+      WELCOME TO THE LOGIN SERVER
+      **************************************************************************************
+
+global:
+
+  domain: example.com
+  internal_subnet_ip: 10.255.0.0
+  internal_netmask: 255.255.255.0
+  internal_netbits: 24
+  internal_domain: 'internal.example.com'
+  internal_inaddr_domain: 0.255.10.in-addr.arpa
+
+
+setups:
+
+  - user_accounts:
+      roles:
+        host:
+          - node2:
+          - node3:
+      config:
+        home: "/home"
+        managehome: true
+        groups:
+            employee: {gid: 4711}
+            visitor: {gid: 4712}
+        users:
+            smith: {uid: 2711, gid: 4711, name: "John Smith" }
+            joe:   {uid: 2712, gid: 4711, name: "Joe Johnsson"}
+            laura: {uid: 2713, gid: 4712, name: "Laura Johnsson"}
+
+  - gateway:
+      roles:
+        host:
+          - node_gw:
+              external_if: eth0
+              internal_if: eth1
+      config:
+        internal_ip: "%{lookup('systems.node_gw.ip')}"
+        internal_netbits: "%{lookup('global.internal_netbits')}"
+        ext_ip: 192.168.42.16
+        nat_in:
+          - web:
+              ports: [80,443]
+              proto: tcp
+              dest: "%{lookup('systems.node_srv.ip')}"
+          - ssh:
+              ports: [22]
+              proto: tcp
+              dest: "%{lookup('systems.node_login.ip')}"
+          - ssh_srv:
+              ports: [3422]
+              proto: tcp
+              dest: "%{lookup('systems.node_srv.ip')}"
+        nat_out:
+          - web:
+              ports: [80,443]
+              proto: tcp
+              source: 10.255.0.1/24
+          - ssh:
+              ports: 22
+              proto: tcp
+              source: 10.255.0.1/24
+          - dns_tcp:
+              ports: 53
+              proto: tcp
+              source: 10.255.0.1/24
+          - dns_udp:
+              ports: 53
+              proto: udp
+              source: 10.255.0.1/24
+          - icmp:
+              proto: icmp
+              source: 10.255.0.1/24
+
+  - webserver:
+      roles:
+        host:
+          - node_srv:
+      config:
+
+  - login_server:
+      roles:
+        host:
+          - login:
+      config:
+
