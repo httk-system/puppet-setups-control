@@ -1,6 +1,6 @@
 # puppet-setups-control
 
-Instructions and a template repository for efficient and secure configuration management of a computing infrastructure using *puppet* with the *puppet-setups* model.
+Instructions and template repository for efficient and secure configuration management of a computing infrastructure using *puppet* with the *puppet-setups* model.
 
     These instructions and source code is governed by an MIT-style license that can be found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
@@ -10,7 +10,7 @@ The main repository is located at: https://github.com/httk-system/puppet-setups-
 
 ## At a glance
 
-The instructions in this README explains how to set up of a configuration management system with the following highlights:
+The configuration management system set up according to this README has the following highlights:
 
 * Puppet-based git-repo-centric configuration management for your computing infrastructure, using GitHub or equivalent.
 * Consistent security model based on public key ssh authentication and signatures with yubikeys hardware keys (recommended) or regular gpg keys (not recommended)
@@ -18,60 +18,36 @@ The instructions in this README explains how to set up of a configuration manage
 * Organization and abstraction of puppet manifests in a *puppet-setups* model that uses a Hiera *setup hierarchy* and puppet *setup modules* which, arguably, has some benefit over a more standard *roles and profiles* model.
 * Enables configuration work to be carried out on the managed systems themselves without the management system getting too much in the way.
 
-## Preface
+## Repository organization
 
-### Puppet
-
-Puppet is a software configuration management tool maintained by the company [Puppet, Inc.](https://puppet.com).
-The tool uses a declarative language in *puppet manifests* expressed in *puppet modules* to specify the configuration of software accross a computing infrastructure comprised by *nodes* (essentially a more general term for "computer" that covers, e.g., containers and virtualized systems).
-
-### The *roles and profiles* method
-
-Puppet modules can be organized and abstracted in many different ways.
-The current standard way is known as the *roles and profiles* method.
-It is well documented both in the [puppet documentation](https://puppet.com/docs/puppet/6/the_roles_and_profiles_method.html) and broadly in various third-party tutorials and guides, e.g., [the Puppet enterprise guide](https://puppet-enterprise-guide.com/theory/roles-and-profiles-overview.html).
-
-The typical application of *roles and profiles* prescribes an organization of three levels.
-A node managed by puppet is assigned one (and only one) *role*, which is comprised by a set of *profiles*.
-The profiles are in turn built up by puppet modules that are typically very oriented towards a specific software.
-For example, one may have *main webserver* and *backup webserver* roles which invoke the same *webserver* profile; which then uses the *apache* puppet module for the specific management the configuration of the Apache web server software.
-Hence, the *roles and profiles* model specify configuration in a "per-node" perspective, in analog to how we tend to think of computers in a computing infrastructure as file servers, web servers, etc.
-
-### The *puppet-setups* method
-
-In contrast to the *roles and profiles* method, the *puppet-setups* model uses as its highest level concept a *setup*, representing a complete software technology (that can possibly span many nodes).
-A list of the *setups* invoked in a computing infrastructure is declared in a Hiera *setup hierarchy*.
-The *setup hierarchy* specifies (i) the general parameters for the specific instance of the technology being configured; (ii) each node that participate in this *setup* with its respective *setup role* and role-specific parameters.
-
-When puppet applies the configuration, the *setup hierarchy* is traversed and for each *setup* for each participating node, a puppet function on the format `setup_<setup name>::<role name>($config)` is called.
-Hence, a *setup module* is a puppet module that provide a namespaced puppet function for each *setup role*.
-The *setup role* function invokes regular *puppet modules* to manage specific software.
-For example, one may have *setups* for, e.g., *big data analytics cluster*, *load balancing web server farm*, and *fileserver*.
-In this example, the *big data analytics cluster* part of the Hiera *setup hierarchy* may specify that the *hadoop name server* role is assigned to node "n4711", the *hadoop backup name server* role is assinged to node "n4712" and the spark history server role is also assigned to node "n4711".
-
-### Repository organization
-
-It is advisible to divide into separate git repositories (i) *puppet-control* for the configuration data pertaining to a specific computing infrastructure; (ii) one or more *puppet-setup* repositories, each with a set of *setup modules*; (iii) one or more *puppet-modules* repositories, each with a set of puppet modules managing specific softwares.
-We handle the relationship between the *puppet-control* repository and its dependencies via [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
-
-The *puppet-control* repository is mostly organized as usual for puppet control repositories:
+The primary repository that declares a full software infrastructure is *puppet-control*.
+It is mostly organized as usual for puppet control repositories:
 
 * `bin/` contains some useful scripts / tools.
 
 * `security/` contains some security-related data files.
 
-* `manifests/` contains the primary puppet manifests that are run on puppet apply, etc..
+* `manifests/` contains the primary puppet manifests that are run to provision new systems and `site.pp` which is called for puppet apply.
 
-* `hiera/setups.yaml` contains the *setup hierarchy* with, more or less, the whole computing infrastructure configuration.
-  (You can of course divide it up into more files if you prefer.)
+* `hiera` contains the Hiera configuration.
+  This repository use what we will call the *puppet-setups* method to organize the puppet configuration manifests, which differs from the usual puppet *roles and profiles* method.
+  The configuration is declared using a Hiera *setup hierarchy*, where the highest level is a list of software technologies, *setups*.
+  Each *setup* specifies global configuration parameters and assignes specific nodes to *roles* of that software technology.
+  For more details on this model, see [PUPPET_SETUPS.md](PUPPET_SETUPS.md).
 
-* `modules/` uses Git submodules to include dependencies in subdirectories as follows:
+  The `hiera/setup.yaml` is the *setup hierarchy*, i.e., the declaration of the computing infrastructure configuration.
+  (Which can be divided up into more files if one prefers.)
 
-  * `upstream-setups`: puppet *setup modules* provided by "upstream", i.e., the `httk-system` GitHub organization.
-  * `upstream-modules`: puppet modules provided by upstream.
-  * `local-setups`: *setup modules* tailored for your own computing infrastructure.
-  * `local-modules`: puppet modules tailored for your own computing infrastructure.
-  * `external`: every subdirectory is an external module provided elsewhere, e.g., the standard `apache` and `firewall` modules provided by puppetlabs.
+* `modules/` uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to include all puppet module dependencies.
+
+   It is generally advisible to divide dependencies into *setup modules* and normal puppet modules that manage specific softwares.
+   Hence, the standard organization of `modules/` is as follows:
+
+   - `upstream-setups`: a git submodule pointing to the "upstream" repo for *setup modules* (i.e., those from the `httk-system` GitHub organization).
+   - `upstream-modules`: a git submodule pointing to the upstream repo for puppet modules.
+   - `local-setups`: a git submodule pointing to a repo for *setup modules* tailored for your own computing infrastructure.
+   - `local-modules`: a git submodule pointing to a repo for normal puppet modules tailored for your own computing infrastructure.
+   - `external`: every subdirectory is a git submodule pointing to an external module, e.g., this is how to include the standard `apache` and `firewall` modules provided by puppetlabs.
 
 ## Prerequisites
 
