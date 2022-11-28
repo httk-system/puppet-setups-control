@@ -65,7 +65,7 @@ In the following we will refer to, e.g., the *control username*.
 To follow these instructions, your intial control center must at least run Ubuntu 20.04.
 It must also have puppet, git, and gpg installed; and tools for managing yubikeys if you are going to use them:
 ```
-sudo apt install git gnupg gnupg-agent puppet
+sudo apt install git gpg gpg-agent puppet
 sudo apt install yubico-piv-tool ykcs11
 ```
 
