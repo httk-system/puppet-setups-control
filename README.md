@@ -2,7 +2,7 @@
 
 This repository is a template repository with instructions to set up and operate efficient and secure configuration management of a computing infrastructure using *puppet* organized according a *"puppet-setups"* model.
 
-*These instructions and source code is governed by an MIT-style license that can be found in the LICENSE file or at https://opensource.org/licenses/MIT. (c) Rickard Armiento, 2022.*
+*These instructions and source code is governed by an MIT-style license that can be found in the LICENSE file - (c) Rickard Armiento, 2022.*
 
 The main repository is located at: https://github.com/httk-system/puppet-setups-control
 
