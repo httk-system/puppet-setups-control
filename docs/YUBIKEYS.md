@@ -59,6 +59,8 @@ For each yubikey you have, do steps 1-7:
 
 7. Secure the puk and pin codes for the piv part of the yubikey.
    You can use the same codes as you used for the gnupg part.
+
+   Note: *the default pin is 123456* and *the default puk is 123456768*.
    ```
    yubico-piv-tool -a change-puk
    yubico-piv-tool -a change-pin
