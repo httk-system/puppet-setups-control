@@ -15,14 +15,12 @@ For each yubikey you have, do steps 1-7:
    * kill the gpg-agent process: `gpgconf --kill gpg-agent`.
    * restart the pcscd process: `systemctl restart pcscd`.
 
-2. Secure the PINs and settings for the apps we will use.
+2. Secure the PINs and settings for the gnupg part of the yubikey.
 
    Note: *the default pin is 123456* and *the default puk is 123456768*.
    ```
    gpg --change-admin-pin
    gpg --change-pin
-   yubico-piv-tool -a change-puk
-   yubico-piv-tool -a change-pin
    ykman openpgp keys set-touch aut on
    ykman openpgp keys set-touch sig on
    ykman openpgp keys set-touch enc on
@@ -59,7 +57,14 @@ For each yubikey you have, do steps 1-7:
    gpgconf --kill gpg-agent
    ```
 
-7. We now want to create a special ssh authentication piv key.
+7. Secure the puk and pin codes for the piv part of the yubikey.
+   You can use the same codes as you used for the gnupg part.
+   ```
+   yubico-piv-tool -a change-puk
+   yubico-piv-tool -a change-pin
+   ```
+
+8. We now want to create a special ssh authentication piv key.
 
    This key will be setup to only require pin once to unlock, and no touch, which makes it less secure, since a rogue process running on your machine could re-invoke the key any number of times once it is unlocked.
    However, this key will only be used to identify us over ssh for running a few select fairly safe commands that we want to be able to run over a large number of systems, where the requirement to touch the yubikey for each connection would be cumbersome.
@@ -71,21 +76,21 @@ For each yubikey you have, do steps 1-7:
    yubico-piv-tool -a import-certificate -s 95 -i piv95-cert.pem
    ```
 
-8. Export the piv keys in ssh format
+9. Export the piv keys in ssh format
    ```
    ssh-keygen -D libykcs11.so -e | grep "Public key for Retired Key 20" > yubikey-public-ssh-piv95.pub
    ```
    
-9. Repeat steps 1-7 for all yubikeys you have to set up.
+10. Repeat steps 1-9 for all yubikeys you have to set up.
    When finished, make sure your current working directory have all key directories as subdirectories.
 
-10. Create files that collect all these public ssh keys, per user:
+11. Create files that collect all these public ssh keys, per user:
    ```
    cat */yubikey-public-ssh.pub > authorized_keys.<control username>
    cat */yubikey-public-ssh-piv95.pub | awk '{print "command=\"/usr/control/puppet-apply\"",$0}' > authorized_keys_auto.<control username>
    ```
 
-11. Create a file that collect all the gpg signature keys:
+12. Create a file that collect all the gpg signature keys:
     ```
     cat */yubikey-public-gpg.asc > trusted_keys.asc
     ```
