@@ -51,7 +51,7 @@ For each yubikey you have, do steps 1-7:
    gpg --export-ssh-key "$KEYID" > yubikey-public-ssh.pub
    ```
 
-6. Before continuing, one often need to stop gpg-agent since it tends to "lock" other use of the yubikey.
+6. Before continuing, it is often needed to stop gpg-agent since it tends to "lock" other uses of the yubikey.
    When gpg is invoked, it will auto-start gpg-agent again (and thus will require you to stop it again for some uses of the yubikey).
    ```
    gpgconf --kill gpg-agent
