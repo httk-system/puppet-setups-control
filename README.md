@@ -1,6 +1,6 @@
 # puppet-setups-control
 
-Instructions and template repository for efficient and secure configuration management of a computing infrastructure using *puppet* with the *puppet-setups* model.
+This repository is a template repository with instructions to set up and operate efficient and secure configuration management of a computing infrastructure using *puppet* organized according a *"puppet-setups"* model.
 
     These instructions and source code is governed by an MIT-style license that can be found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
@@ -10,12 +10,16 @@ The main repository is located at: https://github.com/httk-system/puppet-setups-
 
 ## At a glance
 
-The configuration management system set up according to this README has the following highlights:
+The configuration management system described here has the following highlights:
 
-* Puppet-based git-repo-centric configuration management for your computing infrastructure, using GitHub or equivalent.
-* Consistent security model based on public key ssh authentication and signatures with yubikeys hardware keys (recommended) or regular gpg keys (not recommended)
-* Git submodules are used to track puppet module dependencies, giving a structure that is, arguably, easier to understand and review from security perspective than puppet-librarian, r10k, etc.
-* Organization and abstraction of puppet manifests in a *puppet-setups* model that uses a Hiera *setup hierarchy* and puppet *setup modules* which, arguably, has some benefit over a more standard *roles and profiles* model.
+* Puppet-based git-repo-centric configuration management to manage a computing infrastructure.
+
+* Consistent security model using public key ssh authentication and signatures with yubikeys hardware keys (recommended) or regular gpg keys (not recommended).
+
+* Puppet module dependencies handled using git submodules in a way that is, arguably, easier to understand and review from security perspective than puppet-librarian, r10k, etc.
+
+* Puppet manifests organized in a *"puppet-setups"* model, centered around a Hiera *setup hierarchy* and puppet *setup functions* that, arguably, has some benefit over a more standard *roles and profiles* model. See [docs/PUPPET_SETUPS.md](docs/PUPPET_SETUPS.md) for more info.
+
 * Enables configuration work to be carried out on the managed systems themselves without the management system getting too much in the way.
 
 ## Repository organization
@@ -30,33 +34,33 @@ It is mostly organized as usual for puppet control repositories:
 * `manifests/` contains the primary puppet manifests that are run to provision new systems and `site.pp` which is called for puppet apply.
 
 * `hiera` contains the Hiera configuration.
-  This repository use what we will call the *puppet-setups* method to organize the puppet configuration manifests, which differs from the usual puppet *roles and profiles* method.
-  The configuration is declared using a Hiera *setup hierarchy*, where the highest level is a list of software technologies, *setups*.
-  Each *setup* specifies global configuration parameters and assignes specific nodes to *roles* of that software technology.
-  For more details on this model, see [PUPPET_SETUPS.md](PUPPET_SETUPS.md).
 
-  The `hiera/setup.yaml` is the *setup hierarchy*, i.e., the declaration of the computing infrastructure configuration.
+  The configuration data organized in a *"puppet-setups"* model (which differs from the usual puppet *roles and profiles* method).
+  The file `hiera/setup.yaml` contains the *setup hierarchy*, i.e., the declaration of the computing infrastructure configuration.
   (Which can be divided up into more files if one prefers.)
+  The setup hierarchy is a list of software technologies, *setups*.
+  Each *setup* specifies global configuration parameters and assignes specific nodes to *roles* of that software technology.
+  For more details on this model, see [docs/PUPPET_SETUPS.md](docs/PUPPET_SETUPS.md).
 
 * `modules/` uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to include all puppet module dependencies.
 
-   It is generally advisible to divide dependencies into *setup modules* and normal puppet modules that manage specific softwares.
-   Hence, the standard organization of `modules/` is as follows:
+  It is generally advisible to divide dependencies into *setup modules* and normal puppet modules that manage specific softwares.
+  Hence, the standard organization of `modules/` is as follows:
 
-   - `upstream-setups`: a git submodule pointing to the "upstream" repo for *setup modules* (i.e., those from the `httk-system` GitHub organization).
-   - `upstream-modules`: a git submodule pointing to the upstream repo for puppet modules.
-   - `local-setups`: a git submodule pointing to a repo for *setup modules* tailored for your own computing infrastructure.
-   - `local-modules`: a git submodule pointing to a repo for normal puppet modules tailored for your own computing infrastructure.
-   - `external`: every subdirectory is a git submodule pointing to an external module, e.g., this is how to include the standard `apache` and `firewall` modules provided by puppetlabs.
+  - `upstream-setups`: a git submodule pointing to the "upstream" repo for *setup modules* (i.e., those from the `httk-system` GitHub organization).
+  - `upstream-modules`: a git submodule pointing to the upstream repo for puppet modules.
+  - `local-setups`: a git submodule pointing to a repo for *setup modules* tailored for your own computing infrastructure.
+  - `local-modules`: a git submodule pointing to a repo for normal puppet modules tailored for your own computing infrastructure.
+  - `external`: every subdirectory is a git submodule pointing to an external module, e.g., this is how to include the standard `apache` and `firewall` modules provided by puppetlabs.
 
 ## Prerequisites
 
 ### Control center machine
 
 The infrastructure consists of *managed nodes* and one or more *control centers* (one machine can be both.)
-A *control center* should be a machine where you (or other system administratos) are physically present at to perform system administration tasks, meaning that it is a physically secure place for encryption keys, etc.
+A *control center* should be a machine where a system administrator is physically present to perform system administrative tasks, meaning that it is a physically secure place for encryption keys, etc.
 
-Furthermore, for management on remote systems all system administrators need a *control user*.
+All system administrators need a *control user*.
 It is a good idea to keep these separate from your regular login names, e.g., by adding a "sys" prefix or suffix to the regular usernames.
 In the following we will refer to, e.g., the *control username*.
 
@@ -77,12 +81,12 @@ It is thus highly recommended to invest in at least three [yubikeys](https://www
 These devices are hardware tokens that, when correctly setup and used, makes sure no one will be able to obtain a copy of your secret keys without you knowing.
 I am not affiliated with Yubico, but the cost of these devices is highly motivated for the extra security it brings to managing your infrastructure
 
-The motivation for getting three keys is a golden rule in software and hardware management: never plan to place yourself in a position where there is a single hardware failure between you and a disasterous conseuqence.
-In our case, one day one of our keys will have to be replaced (e.g., due to breaking or missing).
-If we only have two keys and one is gone, we are in a situation where, if the remaining key also fails, we are loced out of our infrastructure.
-(If there is more than one system administrator, the requirement translates to a minimum of three keys in *total*, not per person. However, it is probably a good idea to provide two keys per administrator, since otherwise each key failure means a person is blocked from work until the replacement key is in place.)
+The reason one needs three yubikeys is to adhere to a golden rule: never plan to be in a position where a single hardware failure comes with disasterous conseuqences.
+In our case, it is certain that one day one of the keys has to be replaced (e.g., due to breaking or missing).
+At that point, if we originally one kept two keys, we are a single hardware failure from being locked out of our infrastructure.
+(If there are more than one system administrator, stricly speaking, they can cover for each other so the total minimum of three keys still apply. However, it is probably a good idea to provide two keys per administrator, since otherwise a key failure block that administrator from work until the replacement is in place.)
 
-For information on how to configure the yubikeys, see: [YUBIKEYS.md](YUBIKEYS.md).
+For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIKEYS.md).
 
 ## Bootstrap setup
 
@@ -103,9 +107,10 @@ For information on how to configure the yubikeys, see: [YUBIKEYS.md](YUBIKEYS.md
 
 4. Execute the contol center setup config:
    ```
-   sudo puppet apply manifests/control_center.pp --modulepath modules
+   sudo puppet apply manifests/control_center.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
    ```
-5. Create on your git host (e.g., GitHub) a repository `puppet-setups` for your setups (recommended to be private) and a repository `puppet-modules` (can probably be public) as a bulk repository for your own modules while you develop them.
+   
+5. Create on your git host (e.g., GitHub) a repository `puppet-setups` for your local setup functions (recommended to be private) and a repository `puppet-modules` (can probably be public) as a repository where to keep your own modules while you develop them.
 
 7. Add your own repositories as git submodules to the module directory:
    ```
@@ -117,8 +122,7 @@ For information on how to configure the yubikeys, see: [YUBIKEYS.md](YUBIKEYS.md
 8. A small example infrastructure configuration is provided in `hiera/common.yaml`.
    This is primary file to edit to create your configuration.
 
-9. Modify the dependency modules to include the external repositories you need,
-   plus you likely want to have your own setup and module repositories.
+9. Modify the dependency modules to include the external repositories you need.
 
 10. Commit the changes with a signature (important!):
     ```
@@ -130,7 +134,7 @@ For information on how to configure the yubikeys, see: [YUBIKEYS.md](YUBIKEYS.md
     git push
     ```
 
-## Set up management for a manually installed system
+## Set up management for a first manually installed system
 
 - Install Ubuntu (preferably server-minimal) with working networking and your control user account with sudo priviledges (examples below use "sysrar").
   Preferably configure networking using netplan with networkd as the renderer.
@@ -218,8 +222,13 @@ Note - be attentive when running this, since you have to handle authentication w
   sudo bin/provision.sh "<system name>"
   ```
 
+## Further auto-installed systems
+
+Once you have one managed system up, you can configure it to automatically install and configure systems via network boot.
+(Which, of course, only works if the systems are connected in a way that allows this.)
+
+(Info to be added)
+
 ## Maintenance
 
-(To be added)
-
-  
+(Info to be added)

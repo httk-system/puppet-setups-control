@@ -98,6 +98,3 @@ For each yubikey you have, do steps 1-7:
     cat */yubikey-public-gpg.asc > trusted_keys.asc
     ```
 
-## Setting up gnupg keys (skip if using yubikeys)
-
-(To be added)
