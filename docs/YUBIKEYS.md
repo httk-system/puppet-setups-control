@@ -11,9 +11,9 @@ For each yubikey you have, do steps 1-7:
    You should see a dump of info about your yubikey here.
    If you do not, a few things you can try are:
    
-   * re-insert the yubikey
-   * kill the gpg-agent process
-   * `systemctl restart pcscd`
+   * physically remove and reinsert the yubikey.
+   * kill the gpg-agent process: `gpgconf --kill gpg-agent`.
+   * restart the pcscd process: `systemctl restart pcscd`.
 
 2. Secure the PINs and settings for the apps we will use.
 
