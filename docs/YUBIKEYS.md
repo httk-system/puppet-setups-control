@@ -53,7 +53,13 @@ For each yubikey you have, do steps 1-7:
    gpg --export-ssh-key "$KEYID" > yubikey-public-ssh.pub
    ```
 
-6. We also want to create a special ssh authentication piv key.
+6. Before continuing, one often need to stop gpg-agent since it tends to "lock" other use of the yubikey.
+   When gpg is invoked, it will auto-start gpg-agent again (and thus will require you to stop it again for some uses of the yubikey).
+   ```
+   gpgconf --kill gpg-agent
+   ```
+
+7. We now want to create a special ssh authentication piv key.
 
    This key will be setup to only require pin once to unlock, and no touch, which makes it less secure, since a rogue process running on your machine could re-invoke the key any number of times once it is unlocked.
    However, this key will only be used to identify us over ssh for running a few select fairly safe commands that we want to be able to run over a large number of systems, where the requirement to touch the yubikey for each connection would be cumbersome.
@@ -65,21 +71,21 @@ For each yubikey you have, do steps 1-7:
    yubico-piv-tool -a import-certificate -s 95 -i piv95-cert.pem
    ```
 
-7. Export the piv keys in ssh format
+8. Export the piv keys in ssh format
    ```
    ssh-keygen -D libykcs11.so -e | grep "Public key for Retired Key 20" > yubikey-public-ssh-piv95.pub
    ```
    
-8. Repeat steps 1-7 for all yubikeys you have to set up.
+9. Repeat steps 1-7 for all yubikeys you have to set up.
    When finished, make sure your current working directory have all key directories as subdirectories.
 
-9. Create files that collect all these public ssh keys, per user:
+10. Create files that collect all these public ssh keys, per user:
    ```
    cat */yubikey-public-ssh.pub > authorized_keys.<control username>
    cat */yubikey-public-ssh-piv95.pub | awk '{print "command=\"/usr/control/puppet-apply\"",$0}' > authorized_keys_auto.<control username>
    ```
 
-10. Create a file that collect all the gpg signature keys:
+11. Create a file that collect all the gpg signature keys:
     ```
     cat */yubikey-public-gpg.asc > trusted_keys.asc
     ```
