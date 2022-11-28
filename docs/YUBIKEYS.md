@@ -87,10 +87,10 @@ For each yubikey you have, do steps 1-7:
    When finished, make sure your current working directory have all key directories as subdirectories.
 
 11. Create files that collect all these public ssh keys, per user:
-   ```
-   cat */yubikey-public-ssh.pub > authorized_keys.<control username>
-   cat */yubikey-public-ssh-piv95.pub | awk '{print "command=\"/usr/control/puppet-apply\"",$0}' > authorized_keys_auto.<control username>
-   ```
+    ```
+    cat */yubikey-public-ssh.pub > authorized_keys.<control username>
+    cat */yubikey-public-ssh-piv95.pub | awk '{print "command=\"/usr/control/puppet-apply\"",$0}' > authorized_keys_auto.<control username>
+    ```
 
 12. Create a file that collect all the gpg signature keys:
     ```
