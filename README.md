@@ -2,9 +2,7 @@
 
 This repository is a template repository with instructions to set up and operate efficient and secure configuration management of a computing infrastructure using *puppet* organized according a *"puppet-setups"* model.
 
-    These instructions and source code is governed by an MIT-style license that can be found in the LICENSE file or at https://opensource.org/licenses/MIT.
-
-    (c) Rickard Armiento, 2022
+*These instructions and source code is governed by an MIT-style license that can be found in the LICENSE file or at https://opensource.org/licenses/MIT. (c) Rickard Armiento, 2022.*
 
 The main repository is located at: https://github.com/httk-system/puppet-setups-control
 
@@ -222,10 +220,10 @@ Note - be attentive when running this, since you have to handle authentication w
   sudo bin/provision.sh "<system name>"
   ```
 
-## Further auto-installed systems
+## Auto-install systems
 
-Once you have one managed system up, you can configure it to automatically install and configure systems via network boot.
-(Which, of course, only works if the systems are connected in a way that allows this.)
+Once you have one managed system working, you can configure it to automatically install and configure the rest of the systems you manage via network boot.
+(This, of course, only works if the systems are connected in a way that allows this.)
 
 (Info to be added)
 
