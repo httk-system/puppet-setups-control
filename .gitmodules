@@ -22,3 +22,6 @@
 [submodule "modules/external/apache"]
 	path = modules/external/apache
 	url = https://github.com/puppetlabs/puppetlabs-apache.git
+[submodule "modules/external/gssh"]
+	path = modules/external/gssh
+	url = https://github.com/httk-system/gssh

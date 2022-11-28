@@ -105,7 +105,7 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
 
 4. Execute the contol center setup config:
    ```
-   sudo puppet apply manifests/provision_control_center.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
+   sudo puppet apply modules/upstream-setups/manifests/provision_control_center.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
    ```
    
 5. Create on your git host (e.g., GitHub) a repository `puppet-setups` for your local setup functions (recommended to be private) and a repository `puppet-modules` (can probably be public) as a repository where to keep your own modules while you develop them.
@@ -224,7 +224,7 @@ Note - be attentive when running this, since you have to handle authentication w
   Note: `<system name>` can be left out, in which case it is set to mac-<mac address>.
 
   ```
-  sudo puppet apply manifests/provision_managed_node.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
+  sudo puppet apply modules/upstream-setups/manifests/provision_managed_node.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
   ```
 
 ## Auto-install systems
