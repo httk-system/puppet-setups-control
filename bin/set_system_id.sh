@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# This file is part of puppet-setups:
-#   https://github.com/httk-system/puppet-setups
+# This file is part of puppet-setups-control:
+#   https://github.com/httk-system/puppet-setups-control
 #
 # (c) Rickard Armiento (2022)
 #
@@ -9,7 +9,9 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 #
-# This script provisions a fresh machine
+# This script sets the system id, either to the provided string,
+# or if left blank, to a name derived from the hardware address
+# of the main network interface.
 
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root"
@@ -33,6 +35,3 @@ fi
 echo "SYSTEM ID: $SYSTEM_ID"
 mkdir -p /etc/facter/facts.d/
 echo "system_id=$SYSTEM_ID" > /etc/facter/facts.d/system_id.txt
-
-export RUBYOPT='-W0'
-puppet apply /etc/puppet/code/environments/production/manifests/site.pp

@@ -58,7 +58,7 @@ It is mostly organized as usual for puppet control repositories:
 The infrastructure consists of *managed nodes* and one or more *control centers* (one machine can be both.)
 A *control center* should be a machine where a system administrator is physically present to perform system administrative tasks, meaning that it is a physically secure place for encryption keys, etc.
 
-All system administrators need a *control user*.
+All system administrators need a *control user account*.
 It is a good idea to keep these separate from your regular login names, e.g., by adding a "sys" prefix or suffix to the regular usernames.
 In the following we will refer to, e.g., the *control username*.
 
@@ -69,7 +69,7 @@ sudo apt install git gpg gpg-agent puppet
 sudo apt install yubico-piv-tool ykcs11
 ```
 
-NOTE: the yubico-piv-tool 2.2.0 on Ubuntu 22.04 is not working properly due to a mismatch with the openssl version. On this platform you have to download and build version yubico-piv-tool 2.3.0 manually.
+*NOTE: the yubico-piv-tool 2.2.0 on Ubuntu 22.04 is not working properly due to a mismatch with the openssl version. On this platform you have to download and build version yubico-piv-tool 2.3.0 manually.*
 
 ### Security setup
 
@@ -105,7 +105,7 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
 
 4. Execute the contol center setup config:
    ```
-   sudo puppet apply manifests/control_center.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
+   sudo puppet apply manifests/provision_control_center.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
    ```
    
 5. Create on your git host (e.g., GitHub) a repository `puppet-setups` for your local setup functions (recommended to be private) and a repository `puppet-modules` (can probably be public) as a repository where to keep your own modules while you develop them.
@@ -213,11 +213,18 @@ Note - be attentive when running this, since you have to handle authentication w
   chmod 600 ~/.ssh/authorized_keys
   ```
 
+- Configure a system id
+  Note: `<system name>` can be left out, in which case it is set to mac-<mac address>.
+
+  ```
+  sudo bin/set_system_id.sh "<system name>"
+  ```
+
 - Run the provision script.
   Note: `<system name>` can be left out, in which case it is set to mac-<mac address>.
 
   ```
-  sudo bin/provision.sh "<system name>"
+  sudo puppet apply manifests/provision_managed_node.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
   ```
 
 ## Auto-install systems
