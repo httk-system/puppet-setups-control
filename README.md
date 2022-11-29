@@ -97,37 +97,42 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
    git clone --recurse-submodules <your git repo remote>
    ```
 
-3. Handle the security configuration.
+3. Replace the README.md with one fitting your own control repository (edit as desired).
+   ```
+   mv README_INSTANCE.md README.md
+   ```
+
+4. Handle the security configuration.
 
    - Copy all `authorized_keys_*.<control username>` files for all system administrators into the `security` directory.
 
    - Merge all system administratos `trusted_keys.asc` into a single file and place it into the `security` directory.
 
-4. Execute the contol center setup config:
+5. Execute the contol center setup config:
    ```
    sudo puppet apply modules/upstream-setups/manifests/provision_control_center.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
    ```
    
-5. Create on your git host (e.g., GitHub) a repository `puppet-setups` for your local setup functions (recommended to be private) and a repository `puppet-modules` (can probably be public) as a repository where to keep your own modules while you develop them.
+6. Create on your git host (e.g., GitHub) a repository `puppet-setups` for your local setup functions (recommended to be private) and a repository `puppet-modules` (can probably be public) as a repository where to keep your own modules while you develop them.
 
-6. Add your own repositories as git submodules to the module directory:
+7. Add your own repositories as git submodules to the module directory:
    ```
    cd modules
    git submodule add <url> local-setups
    git submodule add <url> local-modules
    ```
 
-7. A small example infrastructure configuration is provided in `hiera/common.yaml`.
+8. A small example infrastructure configuration is provided in `hiera/common.yaml`.
    This is primary file to edit to create your configuration.
 
-8. Modify the dependency modules to include the external repositories you need.
+9. Modify the dependency modules to include the external repositories you need.
 
-9. Commit the changes with a signature (important!):
-   ```
-   git commit -S
-   ```
+10. Commit the changes with a signature (important!):
+    ```
+    git commit -S
+    ```
 
-10. Push your signed changes to the repository back to your remote.
+11. Push your signed changes to the repository back to your remote.
     ```
     git push
     ```
@@ -164,36 +169,37 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
   ```
 
 - Place any "secrets" your configuration may need into a directory `/root/secrets`.
-  At the very least you should create or copy access-token URLs for read access to your puppet-control, local-setups, and local-modules (if non-public) repositories into `puppet-control-token-url`, `puppet-local-setups-token-url` and `puppet-local-modules-token-url` in this directory.
   ```
   sudo mkdir -p /root/secrets
   ```
+  In this directory you should at least create or copy the following files: `puppet-control-pull-url`, `puppet-local-setups-pull-url` and `puppet-local-modules-pull-url`, `puppet-control-push-url`, `puppet-local-setups-push-url` and `puppet-local-modules-push-url`.
+  For private repository pull-urls, create these using access-token URLs so that the repositories can be updated without authentication.
 
 - Clone your own forked puppet-control repository into `/etc/puppet/code/environments/production` owned by your control user and validate the contents.
 Note - be attentive when running this, since you have to handle authentication when the private submodules are cloned:
   ```
-  CONTROL_USER="sysrar"
-  CONTROL_PUSH_URL="git@github.com:example/puppet-control.git"
-  CONTROL_TOKEN_URL="$(sudo cat /root/secrets/puppet-control-token-url)"  
-  SETUPS_PUSH_URL="git@github.com:example/puppet-local-setups.git"
-  SETUPS_TOKEN_URL="$(sudo cat /root/secrets/puppet-local-setups-token-url)"
-  MODULES_PUSH_URL="git@github.com:example/puppet-local-modules.git"
-  MODULES_TOKEN_URL="$(sudo cat /root/secrets/puppet-local-modules-token-url)"
+  CONTROL_PULL_URL="$(sudo cat /root/secrets/puppet-control-pull-url)"  
+  CONTROL_PUSH_URL="$(sudo cat /root/secrets/puppet-control-push-url)"  
+  SETUPS_PULL_URL="$(sudo cat /root/secrets/puppet-local-setups-pull-url)"
+  SETUPS_PUSH_URL="$(sudo cat /root/secrets/puppet-local-setups-push-url)"
+  MODULES_PULL_URL="$(sudo cat /root/secrets/puppet-local-modules-pull-url)"
+  MODULES_PUSH_URL="$(sudo cat /root/secrets/puppet-local-modules-push-url)"
 
   sudo mkdir -p /etc/puppet/code/environments
-  sudo chown "$CONTROL_USER:$CONTROL_USER" /etc/puppet/code/environments
-  git clone --recurse-submodules "$CONTROL_REPO" /etc/puppet/code/environments/production
+  sudo chown "root:sudo" /etc/puppet/code/environments
+  sudo chmod g+s /etc/puppet/code/environments
+  git clone --recurse-submodules "$CONTROL_PULL_REPO" /etc/puppet/code/environments/production
   chmod go-rx /etc/puppet/code/environments
 
   cd /etc/puppet/code/environments/production
-  git remote set-url origin "$CONTROL_TOKEN_URL"
+  git remote set-url origin "$CONTROL_PULL_URL"
   git remote set-url --push origin "$CONTROL_PUSH_URL"
   cd /etc/puppet/code/environments/modules/local-setups
-  git remote set-url origin "$SETUPS_TOKEN_URL"
+  git remote set-url origin "$SETUPS_PULL_URL"
   git remote set-url --push origin "$SETUPS_PUSH_URL"
   git checkout main
   cd /etc/puppet/code/environments/modules/local-modules
-  git remote set-url origin "$MODULES_TOKEN_URL"
+  git remote set-url origin "$MODULES_PULL_URL"
   git remote set-url --push origin "$MODULES_PUSH_URL"
   git checkout main
   ```
