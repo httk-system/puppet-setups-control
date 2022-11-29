@@ -175,10 +175,10 @@ Note - be attentive when running this, since you have to handle authentication w
   CONTROL_USER="sysrar"
   CONTROL_PUSH_URL="git@github.com:example/puppet-control.git"
   CONTROL_TOKEN_URL="$(sudo cat /root/secrets/puppet-control-token-url)"  
-  SETUPS_PUSH_URL="git@github.com:example/puppet-setups.git"
-  SETUPS_TOKEN_URL="$(sudo cat /root/secrets/puppet-setups-token-url)"
-  MODULES_PUSH_URL="git@github.com:example/puppet-modules.git"
-  MODULES_TOKEN_URL="$(sudo cat /root/secrets/puppet-modules-token-url)"
+  SETUPS_PUSH_URL="git@github.com:example/puppet-local-setups.git"
+  SETUPS_TOKEN_URL="$(sudo cat /root/secrets/puppet-local-setups-token-url)"
+  MODULES_PUSH_URL="git@github.com:example/puppet-local-modules.git"
+  MODULES_TOKEN_URL="$(sudo cat /root/secrets/puppet-local-modules-token-url)"
 
   sudo mkdir -p /etc/puppet/code/environments
   sudo chown "$CONTROL_USER:$CONTROL_USER" /etc/puppet/code/environments
