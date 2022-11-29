@@ -1,4 +1,4 @@
-# Bootstrap a puppet-control repository from puppet-setups-control
+# Bootstrap your own puppet-control repository from puppet-setups-control
 
 ## Prerequisites
 
@@ -44,43 +44,49 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
    mkdir ~/Puppet
    cd ~/Puppet
    git clone --recurse-submodules <your git repo remote>
+   cd <your git repo name>
    ```
 
-3. Edit README.md to fit your own control repository.
+3. Setup a connection to upstream so you can merge updates from this template repository
+   ```
+   git remote set upstream https://github.com/httk-system/puppet-setups-control.git
+   ```
 
-4. Handle the security configuration.
+4. Edit README.md to fit your own control repository.
+
+5. Handle the security configuration.
 
    - Copy all `authorized_keys_*.<control username>` files for all system administrators into the `security` directory.
 
    - Merge all system administratos `trusted_keys.asc` into a single file and place it into the `security` directory.
 
-5. Execute the contol center setup config:
+6. Execute the contol center setup config:
    ```
    sudo puppet apply modules/upstream-setups/manifests/provision_control_center.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
    ```
    
-6. Create on your git host (e.g., GitHub) a repository `puppet-setups` for your local setup functions (recommended to be private) and a repository `puppet-modules` (can probably be public) as a repository where to keep your own modules while you develop them.
+7. Create on your git host (e.g., GitHub) a repository `puppet-setups` for your local setup functions (recommended to be private) and a repository `puppet-modules` (can probably be public) as a repository where to keep your own modules while you develop them.
 
-7. Add your own repositories as git submodules to the module directory:
+8. Add your own repositories as git submodules to the module directory:
    ```
    cd modules
    git submodule add <url> local-setups
    git submodule add <url> local-modules
    ```
 
-8. A small example infrastructure configuration is provided in `hiera/common.yaml`.
+9. A small example infrastructure configuration is provided in `hiera/common.yaml`.
    This is primary file to edit to create your configuration.
 
-9. Modify the dependency modules to include the external repositories you need.
+10. Modify the dependency modules to include the external repositories you need.
 
-10. Commit the changes with a signature (important!):
+11. Commit the changes with a signature (important!):
     ```
     git commit -S
     ```
 
-11. Push your signed changes to the repository back to your remote.
+12. Push your signed changes to the repository back to your remote.
     ```
     git push
     ```
 
-To provision your first managed system, see [docs/PROVISION.md](PROVISION.md)
+To provision your first managed system, now jump to [docs/PROVISION.md](PROVISION.md)
