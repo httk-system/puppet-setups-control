@@ -110,24 +110,24 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
    
 5. Create on your git host (e.g., GitHub) a repository `puppet-setups` for your local setup functions (recommended to be private) and a repository `puppet-modules` (can probably be public) as a repository where to keep your own modules while you develop them.
 
-7. Add your own repositories as git submodules to the module directory:
+6. Add your own repositories as git submodules to the module directory:
    ```
    cd modules
    git submodule add <url> local-setups
    git submodule add <url> local-modules
    ```
 
-8. A small example infrastructure configuration is provided in `hiera/common.yaml`.
+7. A small example infrastructure configuration is provided in `hiera/common.yaml`.
    This is primary file to edit to create your configuration.
 
-9. Modify the dependency modules to include the external repositories you need.
+8. Modify the dependency modules to include the external repositories you need.
 
-10. Commit the changes with a signature (important!):
-    ```
-    git commit -S
-    ```
+9. Commit the changes with a signature (important!):
+   ```
+   git commit -S
+   ```
 
-11. Push your signed changes to the repository back to your remote.
+10. Push your signed changes to the repository back to your remote.
     ```
     git push
     ```
@@ -164,12 +164,12 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
   ```
 
 - Place any "secrets" your configuration may need into a directory `/root/secrets`.
-  At the very least you should create or copy access-token URLs for read access to your puppet-control, local-setups, and local-modules (if non-public) repositories into `puppet-control-token-url` and `puppet-private-token-url` in this directory.
+  At the very least you should create or copy access-token URLs for read access to your puppet-control, local-setups, and local-modules (if non-public) repositories into `puppet-control-token-url`, `puppet-local-setups-token-url` and `puppet-local-modules-token-url` in this directory.
   ```
   sudo mkdir -p /root/secrets
   ```
 
-- Clone this repository into `/etc/puppet/code/environments/production` owned by your control user and validate the contents.
+- Clone your own forked puppet-control repository into `/etc/puppet/code/environments/production` owned by your control user and validate the contents.
 Note - be attentive when running this, since you have to handle authentication when the private submodules are cloned:
   ```
   CONTROL_USER="sysrar"
