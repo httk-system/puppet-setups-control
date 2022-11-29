@@ -164,7 +164,7 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
   ```
 
 - Place any "secrets" your configuration may need into a directory `/root/secrets`.
-  At the very least you should create or copy access-token URLs for read access to your puppet-control and private puppet module directories into `puppet-control-token-url` and `puppet-private-token-url` in this directory.
+  At the very least you should create or copy access-token URLs for read access to your puppet-control, local-setups, and local-modules (if non-public) repositories into `puppet-control-token-url` and `puppet-private-token-url` in this directory.
   ```
   sudo mkdir -p /root/secrets
   ```
