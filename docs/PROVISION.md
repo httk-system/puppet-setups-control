@@ -50,18 +50,19 @@ Note - be attentive when running this, since you have to handle authentication w
 
   sudo mkdir -p /etc/puppet/code/environments
   sudo chown "root:sudo" /etc/puppet/code/environments
-  sudo chmod g+s /etc/puppet/code/environments
-  git clone --recurse-submodules "$CONTROL_PULL_REPO" /etc/puppet/code/environments/production
-  chmod go-rx /etc/puppet/code/environments
+  sudo chmod g+srwx /etc/puppet/code/environments
+  sudo chmod o-rwx /etc/puppet/code/environments
+  umask "0002"
+  git clone --recurse-submodules "$CONTROL_PULL_URL" /etc/puppet/code/environments/production
 
   cd /etc/puppet/code/environments/production
   git remote set-url origin "$CONTROL_PULL_URL"
   git remote set-url --push origin "$CONTROL_PUSH_URL"
-  cd /etc/puppet/code/environments/modules/local-setups
+  cd /etc/puppet/code/environments/production/modules/local-setups
   git remote set-url origin "$SETUPS_PULL_URL"
   git remote set-url --push origin "$SETUPS_PUSH_URL"
   git checkout main
-  cd /etc/puppet/code/environments/modules/local-modules
+  cd /etc/puppet/code/environments/production/modules/local-modules
   git remote set-url origin "$MODULES_PULL_URL"
   git remote set-url --push origin "$MODULES_PUSH_URL"
   git checkout main
