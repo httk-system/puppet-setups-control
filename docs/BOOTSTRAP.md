@@ -100,5 +100,5 @@ git remote add upstream https://github.com/httk-system/puppet-setups-control
 
 To merge future upstream changes into your control repository, do:
 ```
-git pull upsteam main --no-rebase
+git pull upstream main --no-rebase
 ```
