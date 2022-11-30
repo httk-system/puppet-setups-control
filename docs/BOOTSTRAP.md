@@ -90,3 +90,15 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
     ```
 
 To provision your first managed system, now jump to [docs/PROVISION.md](PROVISION.md)
+
+## Add upstream remote to be able to update your control repository
+
+The following commands will allow you to pull future changes from the template repository:
+```
+git remote add upstream https://github.com/httk-system/puppet-setups-control
+```
+
+To merge future upstream changes into your control repository, do:
+```
+git pull upsteam main --no-rebase
+```
