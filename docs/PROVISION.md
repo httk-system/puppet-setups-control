@@ -33,11 +33,16 @@ Note: you first need to have set up your puppet-control repository according to 
   sudo apt install git gpg bind9-dnsutils puppet
   ```
 
+- Disable the default hiera config since it will not be used (and generates warnings from being in a deprecated format)
+  ```
+  sudo mv /etc/puppet/hiera.yaml   sudo mv /etc/puppet/hiera.yaml.disabled
+  ```
+
 ## Setup secrets
 
-- Place any "secrets" your configuration may need into a directory `/root/secrets`.
+- Place any "secrets" your configuration may need into a directory `/root/managed/secrets`.
   ```
-  sudo mkdir -p /root/secrets
+  sudo mkdir -p /root/managed/secrets
   ```
   In this directory you should at least create or copy the following files: `puppet-control-pull-url`, `puppet-local-setups-pull-url` and `puppet-local-modules-pull-url`, `puppet-control-push-url`, `puppet-local-setups-push-url` and `puppet-local-modules-push-url`.
   For private repository pull-urls, create these using access-token URLs so that the repositories can be updated without authentication.
@@ -47,12 +52,12 @@ Note: you first need to have set up your puppet-control repository according to 
 - Clone your own forked puppet-control repository into `/etc/puppet/code/environments/production` owned by your control user and validate the contents.
 Note - be attentive when running this, since you have to handle authentication when the private submodules are cloned:
   ```
-  CONTROL_PULL_URL="$(sudo cat /root/secrets/puppet-control-pull-url)"  
-  CONTROL_PUSH_URL="$(sudo cat /root/secrets/puppet-control-push-url)"  
-  SETUPS_PULL_URL="$(sudo cat /root/secrets/puppet-local-setups-pull-url)"
-  SETUPS_PUSH_URL="$(sudo cat /root/secrets/puppet-local-setups-push-url)"
-  MODULES_PULL_URL="$(sudo cat /root/secrets/puppet-local-modules-pull-url)"
-  MODULES_PUSH_URL="$(sudo cat /root/secrets/puppet-local-modules-push-url)"
+  CONTROL_PULL_URL="$(sudo cat /root/managed/secrets/puppet-control-pull-url)"  
+  CONTROL_PUSH_URL="$(sudo cat /root/managed/secrets/puppet-control-push-url)"  
+  SETUPS_PULL_URL="$(sudo cat /root/managed/secrets/puppet-local-setups-pull-url)"
+  SETUPS_PUSH_URL="$(sudo cat /root/managed/secrets/puppet-local-setups-push-url)"
+  MODULES_PULL_URL="$(sudo cat /root/managed/secrets/puppet-local-modules-pull-url)"
+  MODULES_PUSH_URL="$(sudo cat /root/managed/secrets/puppet-local-modules-push-url)"
 
   sudo mkdir -p /etc/puppet/code/environments
   sudo chown "root:sudo" /etc/puppet/code/environments
