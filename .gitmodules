@@ -28,3 +28,6 @@
 [submodule "modules/external/extlib"]
 	path = modules/external/extlib
 	url = https://github.com/voxpupuli/puppet-extlib.git
+[submodule "modules/external/locales"]
+	path = modules/external/locales
+	url = https://github.com/saz/puppet-locales.git

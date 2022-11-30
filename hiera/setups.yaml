@@ -35,6 +35,9 @@ global:
   internal_domain: 'internal.example.com'
   internal_inaddr_domain: 0.255.10.in-addr.arpa
 
+  default_locale: 'en_US.UTF-8'
+  locales: [ 'en_US.UTF-8', 'sv_SE.UTF-8', 'UTF-8' ]
+
 
 setups:
 
