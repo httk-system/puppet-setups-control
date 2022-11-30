@@ -25,3 +25,6 @@
 [submodule "modules/external/gssh"]
 	path = modules/external/gssh
 	url = https://github.com/httk-system/gssh
+[submodule "modules/external/extlib"]
+	path = modules/external/extlib
+	url = https://github.com/voxpupuli/puppet-extlib.git
