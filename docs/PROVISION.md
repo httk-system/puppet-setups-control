@@ -2,6 +2,8 @@
 
 Note: you first need to have set up your puppet-control repository according to the instructions in [docs/BOOTSTRAP.md](BOOTSTRAP.md).
 
+## Prepare the system
+
 - Install Ubuntu (preferably server-minimal) with working networking and your control user account with sudo priviledges (examples below use "sysrar").
   Preferably configure networking using netplan with networkd as the renderer.
   This is an example `/etc/netplan/20-interfaces.yaml` for one static and one dhcp interface config (remove all other files from /etc/netplan):
@@ -31,12 +33,16 @@ Note: you first need to have set up your puppet-control repository according to 
   sudo apt install git gpg bind9-dnsutils puppet
   ```
 
+## Setup secrets
+
 - Place any "secrets" your configuration may need into a directory `/root/secrets`.
   ```
   sudo mkdir -p /root/secrets
   ```
   In this directory you should at least create or copy the following files: `puppet-control-pull-url`, `puppet-local-setups-pull-url` and `puppet-local-modules-pull-url`, `puppet-control-push-url`, `puppet-local-setups-push-url` and `puppet-local-modules-push-url`.
   For private repository pull-urls, create these using access-token URLs so that the repositories can be updated without authentication.
+
+## Clone the control repo
 
 - Clone your own forked puppet-control repository into `/etc/puppet/code/environments/production` owned by your control user and validate the contents.
 Note - be attentive when running this, since you have to handle authentication when the private submodules are cloned:
@@ -75,13 +81,7 @@ Note - be attentive when running this, since you have to handle authentication w
   ```
   Check the output of the last command to make sure the repository is in a correct state.
 
-- Set up your ssh keys:
-  ```
-  mkdir -p ~/.ssh
-  chmod 700 ~/.ssh
-  cp -rp /etc/puppet/code/environments/production/security/authorized_keys.<control user> ~/.ssh/authorized_keys
-  chmod 600 ~/.ssh/authorized_keys
-  ```
+## Apply system configuration
 
 - Configure a system id
   Note: `<system name>` can be left out, in which case it is set to mac-<mac address>.
@@ -90,20 +90,16 @@ Note - be attentive when running this, since you have to handle authentication w
   sudo bin/set_system_id.sh "<system name>"
   ```
 
-- Run the provision script.
-  Note: `<system name>` can be left out, in which case it is set to mac-<mac address>.
-
+- Run the first `puppet apply`
   ```
-  sudo puppet apply modules/upstream-setups/manifests/provision_managed_node.pp --modulepath modules/external:modules/upstream-setups:modules/upstream-modules
+  sudo puppet apply manifests/site.pp
   ```
 
-## Auto-install systems
+Now go to [docs/MAINTENANCE.md](MAINTENANCE.md) for information about how to maintain this system.
 
-Once you have one managed system working, you can configure it to automatically install and configure the rest of the systems you manage via network boot.
-(This, of course, only works if the systems are connected in a way that allows this.)
+## Automatic provision of new systems
 
-(Info to be added)
-
-## Maintenance
+You can continue to provision system manually by following the above instructions. However, once you have one managed system working, you can configure the bootserver setup to automatically install and configure new systems via network boot.
+(This, of course, only works if the systems are physically connected in a way that allows this.)
 
 (Info to be added)
