@@ -9,14 +9,15 @@ Note: you first need to have set up your puppet-control repository according to 
   This is an example `/etc/netplan/20-interfaces.yaml` for one static and one dhcp interface config (remove all other files from /etc/netplan):
   ```
   network:
-  renderer: networkd
-  ethernets:
-    enp30s0:
-      dhcp4: true
-    enp31s0:
-      dhcp4: false
-      addresses: [192.168.0.42/24]
+    renderer: networkd
+    ethernets:
+      enp30s0:
+        dhcp4: true
+      enp31s0:
+        dhcp4: false
+        addresses: [192.168.0.42/24]
   ```
+  You may need to start systemd-networkd for this to work (`sudo systemctl start systemd-networkd`) and then try applying the configuration with `sudo netplan apply
 
 - You can clean out some unnecessary cruft from the Ubuntu install by:
   ```
