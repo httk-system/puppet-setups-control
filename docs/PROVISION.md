@@ -17,7 +17,11 @@ Note: you first need to have set up your puppet-control repository according to 
         dhcp4: false
         addresses: [192.168.0.42/24]
   ```
-  You may need to start systemd-networkd for this to work (`sudo systemctl start systemd-networkd`) and then try applying the configuration with `sudo netplan apply
+  Note:
+  
+  - You may want to remove the default netplan configuration in `/etc/netplan/` that assings all interfaces to be handled by network-manager.
+  - If the system is running network-manager, you may need to start systemd-networkd with: `sudo systemctl start systemd-networkd`.
+  - Applying the configuration with `sudo netplan apply`.
 
 - You can clean out some unnecessary cruft from the Ubuntu install by:
   ```
