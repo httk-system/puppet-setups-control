@@ -28,7 +28,7 @@ Note: you first need to have set up your puppet-control repository according to 
   sudo apt update
   sudo apt remove ubuntu-desktop ubuntu-desktop-minimal
   sudo apt remove ubuntu-wallpapers
-  sudo apt install ubuntu-server-minimal rsyslog less nano openssh-server bash-completion --no-install-recommends
+  sudo apt install ubuntu-server-minimal policykit-1 rsyslog less nano openssh-server bash-completion --no-install-recommends
   sudo apt-get autoremove -o APT::Autoremove::RecommendsImportant=0 -o APT::Autoremove::SuggestsImportant=0
   sudo apt clean
   ```
