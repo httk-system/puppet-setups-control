@@ -22,6 +22,6 @@ The configuration management system described here has the following highlights:
 
 For more information on the organization of this repository see [docs/ORGANIZATION.md](docs/ORGANIZATION.md).
 
-For information on how to bootstrap your own puppet-control repository from this repository, see [docs/SETUP.md](docs/SETUP.md).
+For information on how to bootstrap your own puppet-control repository from this repository, see [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md).
 
 For information on how to manually provision a new system, see [docs/PROVISION.md](docs/PROVISION.md).
