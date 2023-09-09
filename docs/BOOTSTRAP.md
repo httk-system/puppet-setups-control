@@ -30,8 +30,8 @@ I am not affiliated with Yubico, but the cost of these devices is highly motivat
 
 The reason one needs three yubikeys is to adhere to a golden rule: never plan to be in a position where a single hardware failure comes with disasterous conseuqences.
 In our case, it is certain that one day one of the keys has to be replaced (e.g., due to breaking or missing).
-At that point, if we originally one kept two keys, we are a single hardware failure from being locked out of our infrastructure.
-(If there are more than one system administrator, stricly speaking, they can cover for each other so the total minimum of three keys still apply. However, it is probably a good idea to provide two keys per administrator, since otherwise a key failure block that administrator from work until the replacement is in place.)
+At that point, if we originally only kept two keys, we are a single hardware failure from being locked out of our infrastructure.
+(If there are more than one system administrator, stricly speaking, they can cover for each other so the total minimum of three keys still apply. However, it is probably a good idea to provide two keys per administrator, since otherwise a key failure would block that administrator from work until the replacement is in place.)
 
 For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIKEYS.md).
 
