@@ -49,7 +49,7 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
 
 3. Setup a connection to upstream so you can merge updates from this template repository
    ```
-   git remote set upstream https://github.com/httk-system/puppet-setups-control.git
+   git remote add upstream https://github.com/httk-system/puppet-setups-control.git
    ```
 
 4. Edit README.md to fit your own control repository.
