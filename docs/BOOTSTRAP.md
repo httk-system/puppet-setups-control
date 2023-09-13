@@ -76,9 +76,9 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
 9. Modify the dependency modules to include the external repositories you need.
 
 10. Commit the changes with a signature (important!):
-   ```
-   git commit -S
-   ```
+    ```
+    git commit -S
+    ```
 
 11. Push your signed changes to the repository back to your remote.
     ```
@@ -86,9 +86,9 @@ For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIK
     ```
 
 12. Execute puppet to run the contol center setup config:
-   ```
-   sudo puppet apply manifests/site.pp
-   ```
+    ```
+    sudo puppet apply manifests/site.pp
+    ```
 
 To provision your first managed system, now jump to [docs/PROVISION.md](PROVISION.md)
 
