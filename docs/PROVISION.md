@@ -52,6 +52,12 @@ Note: you first need to have set up your puppet-control repository according to 
   In this directory you should at least create or copy the following files: `puppet-control-pull-url`, `puppet-local-setups-pull-url` and `puppet-local-modules-pull-url`, `puppet-control-push-url`, `puppet-local-setups-push-url` and `puppet-local-modules-push-url`.
   For private repository pull-urls, create these using access-token URLs so that the repositories can be updated without authentication.
 
+  Here is a useful one-liner to grab all these secret files from another system.
+  You run this on the system that has the secret files and the output is a series of bash HERE-docs that you can paste into the system into which you wish to copy them:
+  ```
+  for f in *; do echo "cat <<EOF >$f"; cat $f; echo "EOF"; done
+  ```
+
 ## Clone the control repo
 
 - Clone your own forked puppet-control repository into `/etc/puppet/code/environments/production` owned by your control user and validate the contents.
