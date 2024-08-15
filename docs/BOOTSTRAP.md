@@ -15,7 +15,7 @@ To follow these instructions, your intial control center must at least run Ubunt
 It must also have puppet, git, and gpg installed; and tools for managing yubikeys if you are going to use them:
 ```
 sudo apt install git gpg gpg-agent puppet
-sudo apt install yubico-piv-tool ykcs11
+sudo apt install yubico-piv-tool ykcs11 scdaemon
 ```
 
 *NOTE: the yubico-piv-tool 2.2.0 on Ubuntu 22.04 is not working properly due to a mismatch with the openssl version. On this platform you have to download and build version yubico-piv-tool 2.3.0 manually.*
@@ -33,7 +33,7 @@ In our case, it is certain that one day one of the keys has to be replaced (e.g.
 At that point, if we originally only kept two keys, we are a single hardware failure from being locked out of our infrastructure.
 (If there are more than one system administrator, stricly speaking, they can cover for each other so the total minimum of three keys still apply. However, it is probably a good idea to provide two keys per administrator, since otherwise a key failure would block that administrator from work until the replacement is in place.)
 
-For information on how to setup the yubikeys, see: [docs/YUBIKEYS.md](docs/YUBIKEYS.md).
+For information on how to setup the yubikeys, see: [YUBIKEYS.md](YUBIKEYS.md).
 
 ## Bootstrap your own puppet-control repository
 
